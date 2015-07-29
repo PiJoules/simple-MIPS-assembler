@@ -1,2 +1,6 @@
 addi $t0, $zero, 29374 # save this number into t0
 add $t0, $t1, $t2	# add t1(9) and t2(10) into t0(8)
+and $t0, $t1, $t2
+or $t0, $t1, $t2
+slt $t0, $t1, $t2
+sub $t0, $t1, $t2

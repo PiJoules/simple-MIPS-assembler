@@ -23,11 +23,35 @@ commands = {
 		"pattern": re.compile("^\s*addi\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\d+)\s*$"),
 		"opcode": "001000",
 		"format": "i1"
+	},
+	"and": {
+		"pattern": re.compile("^\s*and\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
+		"opcode": r_type_opcode,
+		"funct": "100100",
+		"shampt": "00000",
+		"format": "r"
+	},
+	"or": {
+		"pattern": re.compile("^\s*or\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
+		"opcode": r_type_opcode,
+		"funct": "100101",
+		"shampt": "00000",
+		"format": "r"
+	},
+	"slt": {
+		"pattern": re.compile("^\s*slt\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
+		"opcode": r_type_opcode,
+		"funct": "101010",
+		"shampt": "00000",
+		"format": "r"
+	},
+	"sub": {
+		"pattern": re.compile("^\s*sub\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
+		"opcode": r_type_opcode,
+		"funct": "100010",
+		"shampt": "00000",
+		"format": "r"
 	}
-	# "and",
-	# "or",
-	# "slt",
-	# "sub"
 }
 
 def to_binary(num, n=5):
@@ -69,7 +93,7 @@ def translate(instructions):
 						return [1, "unknown register " + args[0] + " on line " + str(line_num)]
 					if not args[1] in registers:
 						return [1, "unknown register " + args[1] + " on line " + str(line_num)]
-					
+
 					rs = registers.index(args[1])
 					rt = registers.index(args[0])
 					immed = int(args[2])
