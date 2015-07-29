@@ -1,0 +1,1 @@
+add $t0, $t1, $t2	# add t1(9) and t2(10) into t0(8)
