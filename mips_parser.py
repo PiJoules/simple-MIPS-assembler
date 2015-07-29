@@ -65,6 +65,10 @@ def translate(instructions):
 	lines = []
 	line_num = 1
 	for line in instructions:
+		if line.strip() == "":
+			line_num += 1
+			continue
+
 		unknown_command = True
 		line = re.sub(comment_pattern, "", line) # Remove comments
 		for key in commands:
