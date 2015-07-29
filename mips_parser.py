@@ -3,7 +3,8 @@ import re
 
 # Static stuff
 registers = ["zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"]
-formats = ["r","i","j"]
+# Some I formats have syntax of "rt, immed(rs)" instead of "rt, rs, immed"
+formats = ["r","i1","i2","j"]
 
 # Reusable stuff
 comment_pattern = re.compile("\#.*")
@@ -18,17 +19,19 @@ commands = {
 		"shampt": "00000",
 		"format": "r"
 	},
-	# "addi": {
-
-	# }
+	"addi": {
+		"pattern": re.compile("^\s*addi\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\d+)\s*$"),
+		"opcode": "001000",
+		"format": "i1"
+	}
 	# "and",
 	# "or",
 	# "slt",
 	# "sub"
 }
 
-def to_binary(num):
-	return "{0:b}".format(num).zfill(5)
+def to_binary(num, n=5):
+	return "{0:b}".format(num).zfill(n)
 
 # Converts a list of mips instructions into a list of binary strings.
 # Returns a list of size 2. The first element is either a 0 or 1. 
@@ -38,26 +41,44 @@ def translate(instructions):
 	lines = []
 	line_num = 1
 	for line in instructions:
+		unknown_command = True
 		line = re.sub(comment_pattern, "", line) # Remove comments
-		unkown_line = True
 		for key in commands:
 			command = commands[key]
 			r = re.search(command["pattern"], line) # Check for an existing pattern
 			if r:
 				result = command["opcode"] # Line always starts with the opcode
-				args = r.groups() # Get the arguments
-				for arg in args: # Check if valid register
-					if not arg in registers:
-						return [1, "unknown register " + arg + " on line " + str(line_num)]
 				f = command["format"]
+				args = r.groups() # Get the arguments
 				if f == "r":
+					# Check if valid register
+					if not args[0] in registers:
+						return [1, "unknown register " + args[0] + " on line " + str(line_num)]
+					if not args[1] in registers:
+						return [1, "unknown register " + args[1] + " on line " + str(line_num)]
+					if not args[2] in registers:
+						return [1, "unknown register " + args[2] + " on line " + str(line_num)]
+
 					rs = registers.index(args[1])
 					rt = registers.index(args[2])
 					rd = registers.index(args[0])
 					result += to_binary(rs) + to_binary(rt) + to_binary(rd) + command["shampt"] + command["funct"]
 					lines.append(result)
-			else:
-				return [1, "unknown pattern on line " + str(line_num)]
+				elif f == "i1":
+					if not args[0] in registers:
+						return [1, "unknown register " + args[0] + " on line " + str(line_num)]
+					if not args[1] in registers:
+						return [1, "unknown register " + args[1] + " on line " + str(line_num)]
+					
+					rs = registers.index(args[1])
+					rt = registers.index(args[0])
+					immed = int(args[2])
+					result += to_binary(rs) + to_binary(rt) + to_binary(immed,16)
+					lines.append(result)
+				unknown_command = False
+				break
+		if unknown_command:
+			return [1, "unknown pattern on line " + str(line_num)]
 		line_num += 1
 	return [0, lines]
 
