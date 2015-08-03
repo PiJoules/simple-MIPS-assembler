@@ -8,6 +8,9 @@ formats = ["r","i1","i2","j"]
 
 # Reusable stuff
 comment_pattern = re.compile("\#.*")
+breakpoint_inline_pattern = re.compile("^\s*(\w+)\:\s*\w+.*$") # breakpoint is on the same line as the instruction
+breakpoint_nextline_pattern = re.compile("^\s*(\w+)\:\s*$") # breakpoint is only thing on the current line
+
 r_type_opcode = "000000"
 
 # The differen unique mips commands
@@ -57,20 +60,54 @@ commands = {
 def to_binary(num, n=5):
 	return "{0:b}".format(num).zfill(n)
 
+def find_breakpoints(instructions):
+	breakpoints = {}
+	for i in range(len(instructions)):
+		line = instructions[i]
+		inline = re.search(breakpoint_inline_pattern, line)
+		if inline:
+			breakpoint = inline.groups()[0]
+			breakpoints[breakpoint] = i+1
+			continue
+		nextline = re.search(breakpoint_nextline_pattern, line)
+		if nextline:
+			breakpoint = nextline.groups()[0]
+			breakpoints[breakpoint] = i+1
+			continue
+	return breakpoints
+
 # Converts a list of mips instructions into a list of binary strings.
 # Returns a list of size 2. The first element is either a 0 or 1. 
 # 0 indicates the program worked and the correct output is in the second element.
 # 1 indicates the code wasn't properly formated and an error message is the second element.
 def translate(instructions):
 	lines = []
-	line_num = 1
+	breakpoints = []
+	line_map = {} # Map the original instructions to the new lines in the lines list
+	line_num = 1 # Variable for keeping track of errors
+	total_lines = 0 # The final number of instructions that will appear in the output
 	for line in instructions:
+		unknown_command = True
+		line = re.sub(comment_pattern, "", line) # Remove comments
+
 		if line.strip() == "":
 			line_num += 1
 			continue
 
-		unknown_command = True
-		line = re.sub(comment_pattern, "", line) # Remove comments
+		# Find breakpoints here
+		inline = re.search(breakpoint_inline_pattern, line)
+		if inline:
+			breakpoint = inline.groups()[0]
+			line = re.sub(breakpoint + ":", "", line) # just remove the breakpoint and save for later
+			line_map[breakpoint] = total_lines
+		else:
+			nextline = re.search(breakpoint_nextline_pattern, line)
+			if nextline:
+				breakpoint = nextline.groups()[0]
+				line_map[breakpoint] = total_lines+1
+				line_num += 1 # Treat this line the same as an empy line
+				continue
+
 		for key in commands:
 			command = commands[key]
 			r = re.search(command["pattern"], line) # Check for an existing pattern
@@ -108,6 +145,7 @@ def translate(instructions):
 		if unknown_command:
 			return [1, "unknown pattern on line " + str(line_num)]
 		line_num += 1
+		total_lines += 1
 	return [0, lines]
 
 
