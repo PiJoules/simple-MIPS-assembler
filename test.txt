@@ -1,4 +1,4 @@
-
+# MIPS instruction set to test on
 AYY:
 addi $t0, $zero, 12 # save 12 number into t0
 add $t0, $t1, $t2	# add t1(9) and t2(10) into t0(8)

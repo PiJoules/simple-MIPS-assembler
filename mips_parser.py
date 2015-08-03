@@ -1,67 +1,13 @@
 import sys
-import re
+from core import *
 
-# Static stuff
-registers = ["zero","at","v0","v1","a0","a1","a2","a3","t0","t1","t2","t3","t4","t5","t6","t7","s0","s1","s2","s3","s4","s5","s6","s7","t8","t9","k0","k1","gp","sp","fp","ra"]
-# Some I formats have syntax of "rt, immed(rs)" (i1) instead of "rt, rs, immed" (i2)
-formats = ["r","i1","i2","j"]
-
-# Reusable stuff
-comment_pattern = re.compile("\#.*")
-breakpoint_inline_pattern = re.compile("^\s*(\w+)\:\s*\w+.*$") # breakpoint is on the same line as the instruction
-breakpoint_nextline_pattern = re.compile("^\s*(\w+)\:\s*$") # breakpoint is only thing on the current line
-
-r_type_opcode = "000000"
-
-# The differen unique mips commands
-commands = {
-	"add": {
-		"pattern": re.compile("^\s*add\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
-		"opcode": r_type_opcode,
-		"funct": "100000",
-		"shampt": "00000",
-		"format": "r"
-	},
-	"addi": {
-		"pattern": re.compile("^\s*addi\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\d+)\s*$"),
-		"opcode": "001000",
-		"format": "i1"
-	},
-	"and": {
-		"pattern": re.compile("^\s*and\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
-		"opcode": r_type_opcode,
-		"funct": "100100",
-		"shampt": "00000",
-		"format": "r"
-	},
-	"beq": {
-		"pattern": re.compile("^\s*beq\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\w+|\d+)\s*$"),
-		"opcode": "000100",
-		"format": "i2"
-	},
-	"or": {
-		"pattern": re.compile("^\s*or\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
-		"opcode": r_type_opcode,
-		"funct": "100101",
-		"shampt": "00000",
-		"format": "r"
-	},
-	"slt": {
-		"pattern": re.compile("^\s*slt\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
-		"opcode": r_type_opcode,
-		"funct": "101010",
-		"shampt": "00000",
-		"format": "r"
-	},
-	"sub": {
-		"pattern": re.compile("^\s*sub\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
-		"opcode": r_type_opcode,
-		"funct": "100010",
-		"shampt": "00000",
-		"format": "r"
-	}
-}
-
+"""
+Just convert an integer to binary. Unfortunately, converting a negative number
+invloves a slightly more complicated process since bin() doesn't work on 
+negative numbers.
+num - the int to convert into binary
+n - the number of bits in the result
+"""
 def to_binary(num, n=5):
 	if num < 0:
 		# bin() of a negative number returns -thesignednum (bin(-5) => -0b101 instead of 1011)
@@ -87,24 +33,12 @@ def to_binary(num, n=5):
 			elif result[i] == "1" and carry == 1:
 				result = result[:i] + "0" + result[i+1:]
 		return result
-	return "{0:b}".format(num).zfill(n)
+	else:
+		return "{0:b}".format(num).zfill(n)
 
-def find_breakpoints(instructions):
-	breakpoints = {}
-	for i in range(len(instructions)):
-		line = instructions[i]
-		inline = re.search(breakpoint_inline_pattern, line)
-		if inline:
-			breakpoint = inline.groups()[0]
-			breakpoints[breakpoint] = i+1
-			continue
-		nextline = re.search(breakpoint_nextline_pattern, line)
-		if nextline:
-			breakpoint = nextline.groups()[0]
-			breakpoints[breakpoint] = i+1
-			continue
-	return breakpoints
-
+"""
+Check if a string is an integer
+"""
 def is_int(s):
 	if len(s) < 1:
 		return False
@@ -112,13 +46,14 @@ def is_int(s):
 		return s[1:].isdigit()
 	return s.isdigit()
 
-# Converts a list of mips instructions into a list of binary strings.
-# Returns a list of size 2. The first element is either a 0 or 1. 
-# 0 indicates the program worked and the correct output is in the second element.
-# 1 indicates the code wasn't properly formated and an error message is the second element.
+"""
+Converts a list of mips instructions into a list of binary strings.
+Returns a list of size 2. The first element is either a 0 or 1. 
+0 indicates the program worked and the correct output is in the second element.
+1 indicates the code wasn't properly formated and an error message is the second element.
+"""
 def translate(instructions):
 	lines = []
-	breakpoints = []
 	line_map = {} # Map the original instructions to the new lines in the lines list
 	line_num = 1 # Variable for keeping track of errors
 	current_line = 0 # The index of the current instruction being parsed
@@ -127,6 +62,7 @@ def translate(instructions):
 	for line in instructions:
 		line = re.sub(comment_pattern, "", line) # Remove comments
 
+		# Ignore empty lines
 		if line.strip() == "":
 			continue
 
@@ -147,6 +83,7 @@ def translate(instructions):
 		unknown_command = True
 		line = re.sub(comment_pattern, "", line) # Remove comments
 
+		# Ignore empty lines
 		if line.strip() == "":
 			line_num += 1
 			continue
@@ -154,13 +91,14 @@ def translate(instructions):
 		# Ignore lines starting with breakpoints
 		inline = re.search(breakpoint_inline_pattern, line)
 		if inline:
-			line = re.sub(breakpoint + ":", "", line) # Just remove the breakpoint
+			line = re.sub(breakpoint + ":", "", line) # Just remove the breakpoint; we already know the line number
 		else:
 			nextline = re.search(breakpoint_nextline_pattern, line)
 			if nextline:
 				line_num += 1 # Treat this line the same as an empy line
 				continue
 
+		# Find a matching command
 		for key in commands:
 			command = commands[key]
 			r = re.search(command["pattern"], line) # Check for an existing pattern
@@ -213,12 +151,14 @@ def translate(instructions):
 						return [1, "breakpoint " + immed + " on line " + str(line_num) + " does not exist"]
 					lines.append(result)
 
-				unknown_command = False
+				unknown_command = False # Found an existing pattern
 				break
 		if unknown_command:
 			return [1, "unknown pattern on line " + str(line_num)]
+
 		line_num += 1
 		current_line += 1
+		
 	return [0, lines]
 
 
