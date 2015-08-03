@@ -5,6 +5,8 @@ add $t0, $t1, $t2	# add t1(9) and t2(10) into t0(8)
 and $t0, $t1, $t2
 or $t0, $t1, $t2
 LMAO: slt $t0, $t1, $t2
+beq $t0, $t1, AYY
+beq $t0, $t1, 12
 sub $t0, $t1, $t2
 
 
