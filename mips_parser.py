@@ -208,11 +208,10 @@ def translate(instructions):
 					if is_int(immed): # Check if integer
 						result += to_binary(int(immed),16)
 					elif immed in line_map:
-						result += to_binary( line_map[immed]-current_line )
-						print to_binary( line_map[immed]-current_line )
-						print current_line, immed
+						result += to_binary( line_map[immed]-current_line-1, 16) # -1 index because the PC automatically increments (+1 index)
 					else:
 						return [1, "breakpoint " + immed + " on line " + str(line_num) + " does not exist"]
+					lines.append(result)
 
 				unknown_command = False
 				break
@@ -220,7 +219,6 @@ def translate(instructions):
 			return [1, "unknown pattern on line " + str(line_num)]
 		line_num += 1
 		current_line += 1
-	print line_map
 	return [0, lines]
 
 
