@@ -27,7 +27,7 @@ commands = {
 	"addi": {
 		"pattern": re.compile("^\s*addi\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\d+)\s*$"),
 		"opcode": "001000",
-		"format": "i1"
+		"format": "i2"
 	},
 	"and": {
 		"pattern": re.compile("^\s*and\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
@@ -40,6 +40,16 @@ commands = {
 		"pattern": re.compile("^\s*beq\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\w+|\d+)\s*$"),
 		"opcode": "000100",
 		"format": "i2"
+	},
+	"bne": {
+		"pattern": re.compile("^\s*bne\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\w+|\d+)\s*$"),
+		"opcode": "000101",
+		"format": "i2"
+	},
+	"j": {
+		"pattern": re.compile("^\s*j\s*(\w+|\d+)\s*$"),
+		"opcode": "000010",
+		"format": "j"
 	},
 	"or": {
 		"pattern": re.compile("^\s*or\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$"),
