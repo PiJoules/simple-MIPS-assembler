@@ -101,10 +101,19 @@ def translate(instructions):
 		# Find a matching command
 		for key in commands:
 			command = commands[key]
-			r = re.search(command["pattern"], line) # Check for an existing pattern
+			f = command["format"]
+			if f == "r":
+				pattern = r_pattern(key)
+			elif f == "i1":
+				pattern = i1_pattern(key)
+			elif f == "i2":
+				pattern = i2_pattern(key)
+			elif f == "j":
+				pattern = j_pattern(key)
+
+			r = re.search(pattern, line) # Check for an existing pattern
 			if r:
 				result = command["opcode"] # Line always starts with the opcode
-				f = command["format"]
 				args = r.groups() # Get the arguments
 				if f == "r":
 					# Check if valid register
