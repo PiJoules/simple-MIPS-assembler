@@ -164,7 +164,7 @@ def translate(instructions):
 					if is_int(addr): # Check if integer
 						result += to_binary(int(addr),26)
 					elif addr in line_map:
-						result += to_binary( line_map[addr], 26) # -1 index because the PC automatically increments (+1 index)
+						result += to_binary( line_map[addr], 26)
 					else:
 						return [1, "breakpoint " + addr + " on line " + str(line_num) + " does not exist"]
 					lines.append(result)
