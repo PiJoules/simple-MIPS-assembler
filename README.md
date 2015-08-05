@@ -1,11 +1,20 @@
 # Simple MIPS Compiler
 Made for easily creating binary that can be easily used in the [MIPS Processor](https://github.com/PiJoules/MIPS-processor).
 
+The application is also available at [http://forward-script-811.appspot.com/]( http://forward-script-811.appspot.com/
+).
+
 ## Usage
 Just pass in the contents of the file containing the mips code to the python script.
 
 ```sh
 $ python mips_parser.py < test.txt
+```
+
+The website can also be run locally, though pip and the google app engine python sdk is required to run it.
+```sh
+$ pip install -r requirements.txt -t lib/ # to install the dependencies
+$ dev_appserver.py . # to launch a dev server
 ```
 
 ## Supported Instructions
