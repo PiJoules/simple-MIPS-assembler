@@ -11,3 +11,5 @@ sub $t0, $t1, $t2
 beq $t0, $t1,LMAO
 bne $t0, $t1,LMAO
 j LMAO
+lw $t0, 12($t0)
+sw $t0, 12($t0)

@@ -49,6 +49,10 @@ commands = {
 		"opcode": "000010",
 		"format": "j"
 	},
+	"lw": {
+		"opcode": "100011",
+		"format": "i1"
+	},
 	"or": {
 		"opcode": r_type_opcode,
 		"funct": "100101",
@@ -60,6 +64,10 @@ commands = {
 		"funct": "101010",
 		"shampt": "00000",
 		"format": "r"
+	},
+	"sw": {
+		"opcode": "101011",
+		"format": "i1"
 	},
 	"sub": {
 		"opcode": r_type_opcode,

@@ -132,12 +132,12 @@ def translate(instructions):
 				elif f == "i1":
 					if not args[0] in registers:
 						return [1, "unknown register " + args[0] + " on line " + str(line_num)]
-					if not args[1] in registers:
-						return [1, "unknown register " + args[1] + " on line " + str(line_num)]
+					if not args[2] in registers:
+						return [1, "unknown register " + args[2] + " on line " + str(line_num)]
 
-					rs = registers.index(args[1])
+					rs = registers.index(args[2])
 					rt = registers.index(args[0])
-					immed = int(args[2])
+					immed = int(args[1])
 					result += to_binary(rs) + to_binary(rt) + to_binary(immed,16)
 					lines.append(result)
 				elif f == "i2":
