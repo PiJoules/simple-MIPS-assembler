@@ -17,5 +17,8 @@ $ python mips_parser.py < test.txt
 | Branch On Equal | I | if (R[rs]==R[rt]) PC=PC+4+BranchAddr | beq $rs, $rt, BranchAddr |
 | Branch On Not Equal | I | if (R[rs]!=R[rt]) PC=PC+4+BranchAddr | bne $rs, $rt, BranchAddr |
 | Jump | J | PC=JumpAddr | j JumpAddr |
+| Load Word | I | R[rt]=M[R[rs]+immed] | lw $rt, immed($rs) |
 | Or | R | R[rd] = R[rs] \| R[rt] | or $rd, $rs, $rt |
 | Set Less Than | R | R[rd] = (R[rs] < R[rt]) ? 1 : 0 | slt $rd, $rs, $rt |
+| Store Word | I | M[R[rs]+immed]=R[rt] | sw $rt, immed($rs) |
+| Sub | R | R[rd] = R[rs] - R[rt] | sub $rd, $rs, $rt |
