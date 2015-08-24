@@ -109,7 +109,7 @@ def translate(instructions):
 			elif f == "i2":
 				pattern = i2_pattern(key)
 			elif f == "i3":
-				pattern = i2_pattern(key)
+				pattern = i3_pattern(key)
 			elif f == "j":
 				pattern = j_pattern(key)
 

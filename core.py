@@ -16,9 +16,9 @@ comment_pattern = re.compile("\#.*")
 breakpoint_inline_pattern = re.compile("^\s*(\w+)\:\s*\w+.*$") # Breakpoint is on the same line as the instruction
 breakpoint_nextline_pattern = re.compile("^\s*(\w+)\:\s*$") # Breakpoint is only thing on the current line
 r_pattern = lambda x: re.compile("^\s*" + x + "\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*\$(\w+)\s*$")
-i1_pattern = lambda x: re.compile("^\s*" + x + "\s*\$(\w+)\s*,\s*(\d+)\s*\(\s*\$(\w+)\s*\)\s*$")
-i2_pattern = lambda x: re.compile("^\s*" + x + "\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\w+|\d+)\s*$")
-i3_pattern = lambda x: re.compile("^\s*" + x + "\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\w+|\d+)\s*$")
+i1_pattern = lambda x: re.compile("^\s*" + x + "\s*\$(\w+)\s*,\s*(\-?\d+)\s*\(\s*\$(\w+)\s*\)\s*$")
+i2_pattern = lambda x: re.compile("^\s*" + x + "\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\w+|\-?\d+)\s*$")
+i3_pattern = lambda x: re.compile("^\s*" + x + "\s*\$(\w+)\s*,\s*\$(\w+)\s*,\s*(\w+|\-?\d+)\s*$")
 j_pattern = lambda x: re.compile("^\s*" + x + "\s*(\w+|\d+)\s*$")
 
 r_type_opcode = "000000"
