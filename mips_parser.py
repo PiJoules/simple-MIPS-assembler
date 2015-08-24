@@ -108,6 +108,8 @@ def translate(instructions):
 				pattern = i1_pattern(key)
 			elif f == "i2":
 				pattern = i2_pattern(key)
+			elif f == "i3":
+				pattern = i2_pattern(key)
 			elif f == "j":
 				pattern = j_pattern(key)
 
@@ -148,6 +150,25 @@ def translate(instructions):
 
 					rs = registers.index(args[0])
 					rt = registers.index(args[1])
+					immed = args[2]
+
+					result += to_binary(rs) + to_binary(rt)
+
+					if is_int(immed): # Check if integer
+						result += to_binary(int(immed),16)
+					elif immed in line_map:
+						result += to_binary( line_map[immed]-current_line-1, 16) # -1 index because the PC automatically increments (+1 index)
+					else:
+						return [1, "breakpoint " + immed + " on line " + str(line_num) + " does not exist"]
+					lines.append(result)
+				elif f == "i3":
+					if not args[0] in registers:
+						return [1, "unknown register " + args[0] + " on line " + str(line_num)]
+					if not args[1] in registers:
+						return [1, "unknown register " + args[1] + " on line " + str(line_num)]
+
+					rs = registers.index(args[1])
+					rt = registers.index(args[0])
 					immed = args[2]
 
 					result += to_binary(rs) + to_binary(rt)
