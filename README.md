@@ -1,4 +1,4 @@
-# Simple MIPS Compiler
+# Simple MIPS Assembler
 Made for easily creating binary that can be easily used in the [MIPS Processor](https://github.com/PiJoules/MIPS-processor).
 
 The application is also available at [http://forward-script-811.appspot.com/]( http://forward-script-811.appspot.com/
